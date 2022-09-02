@@ -1,0 +1,84 @@
+{
+  "ignition": {
+    "config": {},
+    "security": {
+      "tls": {}
+    },
+    "timeouts": {},
+    "version": "2.3.0"
+  },
+  "networkd": {},
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG906rpTSDQfKiLs5RoBYzzOEPZGN1W3g2rTWQVlyhIS",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDNYnF5GyE7SVyoPV7w1QZCL/lywIuE0CRt9HXqEHr3jmLNAuRUDxDeRfPc9MQSfI4xWcttyxYXBprqEmO2z1XrffZHHMRPt1PrzgCTlijWz0QD5LTKtwdaLRKEt+wdp>"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "filesystem": "root",
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,fc2",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "oem",
+        "path": "/grub.cfg",
+        "contents": {
+          "source": "data:,set%20oem_id%3D%22vmware%22%0Aset%20linux_append%3D%22%22%0A",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
+        "path": "/opt/k3s-install.sh",
+        "contents": {
+          "source": "https://get.k3s.io",
+          "verification": {}
+        },
+        "mode": 777
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/nsswitch.conf",
+        "contents": {
+          "source": "data:,%23%20%2Fetc%2Fnsswitch.conf%3A%0A%0Apasswd%3A%20%20%20%20%20%20files%20usrfiles%0Ashadow%3A%20%20%20%20%20%20files%20usrfiles%0Agroup%3A%20%20%20%20%20%20%20files%20usrfiles%0A%0Ahosts%3A%20%20%20%20%20%20%20files%20usrfiles%20resolve%20dns%0Anetworks%3A%20%20%20%20files%20usrfiles%20dns%0A%0Aservices%3A%20%20%20%20files%20usrfiles%0Aprotocols%3A%20%20%20files%20usrfiles%0Arpc%3A%20%20%20%20%20%20%20%20%20files%20usrfiles%0A%0Aethers%3A%20%20%20%20%20%20files%0Anetmasks%3A%20%20%20%20files%0Anetgroup%3A%20%20%20%20files%0Abootparams%3A%20%20files%0Aautomount%3A%20%20%20files%0Aaliases%3A%20%20%20%20%20files%20%0A",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ],
+    "filesystems": [
+      {
+        "mount": {
+          "device": "/dev/disk/by-label/OEM",
+          "format": "ext4"
+        },
+        "name": "oem"
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=VMware metadata agent\nAfter=nss-lookup.target\nAfter=network-online.target\nWants=network-online.target\n[Service]\nType=oneshot\nRestart=on-failure\nRemainAfterExit=yes\nEnvironment=OUTPUT=/run/metadata/coreos\nExecStart=/usr/bin/mkdir --parent /run/metadata\nExecStart=/usr/bin/bash -c 'echo \"COREOS_CUSTOM_PRIVATE_IPV4=$(ip addr show ens192 | grep \"inet 10.\" | grep -Po \"inet \\K[\\d.]+\")\\nCOREOS_CUSTOM_PUBLIC_IPV4=$(ip addr show ens192 | grep -v \"inet 10.\" | grep -Po \"inet \\K[\\d.]+\")\" > ${OUTPUT}'        \n",
+        "name": "coreos-metadata.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Run K3s script\nWants = network-online.target\nAfter = network.target network-online.target        \nConditionPathExists=/opt/k3s-install.sh\nConditionPathExists=!/opt/bin/k3s\n[Service]\nType=forking\nTimeoutStartSec=180\nRemainAfterExit=yes\nKillMode=process\nEnvironment=\"K3S_URL=https://192.168.139.10:6443\"\nEnvironment=\"K3S_TOKEN=D4Ls99gRAqXwCXqmkaD6PnlvZdEf1OfnVN3oie5eNW94GN9yp8yk3OSaUEN3XMkMCLzQgwGRCtJQU75nQrDJRm9jyliQ3G2m8Bo5xTAn1IDWHeXgujj5gtXEeWgAIBAC\"\nExecStart=/usr/bin/sh -c \"/opt/k3s-install.sh\"\n[Install]\nWantedBy=multi-user.target \n",
+        "enabled": true,
+        "name": "k3s-install.service"
+      }
+    ]
+  }
+}
