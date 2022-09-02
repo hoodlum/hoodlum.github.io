@@ -10,7 +10,7 @@
   "networkd": {
     "units": [
       {
-        "contents": "[Match]\nName=ens192\n\n[Network]\nDNS=192.168.139.2\nAddress=192.168.139.10/24\nGateway=192.168.139.2       \n",
+        "contents": "[Match]\nName=ens192\n\n[Network]\nDNS=192.168.139.2\nAddress=192.168.139.10/24\nGateway=192.168.139.2\n",
         "name": "10-static.network"
       }
     ]
