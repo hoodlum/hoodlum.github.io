@@ -82,7 +82,7 @@
         "name": "coreos-metadata.service"
       },
       {
-        "contents": "[Unit]\nDescription=Run K3s script\nWants = network-online.target\nAfter = network.target network-online.target        \nConditionPathExists=/opt/k3s-install.sh\nConditionPathExists=!/opt/bin/k3s\n[Service]\nType=forking\nTimeoutStartSec=180\nRemainAfterExit=yes\nKillMode=process\nEnvironment=\"K3S_TOKEN=D4Ls99gRAqXwCXqmkaD6PnlvZdEf1OfnVN3oie5eNW94GN9yp8yk3OSaUEN3XMkMCLzQgwGRCtJQU75nQrDJRm9jyliQ3G2m8Bo5xTAn1IDWHeXgujj5gtXEeWgAIBAC\"\nEnvironment=\"INSTALL_K3S_EXEC=--cluster-init --disable servicelb --disable traefik\"\nExecStart=/usr/bin/sh -c \"/opt/k3s-install.sh\"\n[Install]\nWantedBy=multi-user.target \n",
+        "contents": "[Unit]\nDescription=Run K3s script\nWants = network-online.target\nAfter = network.target network-online.target        \nConditionPathExists=/opt/k3s-install.sh\nConditionPathExists=!/opt/bin/k3s\n[Service]\nType=forking\nTimeoutStartSec=180\nRemainAfterExit=yes\nKillMode=process\nEnvironment=\"K3S_TOKEN=D4Ls99gRAqXwCXqmkaD6PnlvZdEf1OfnVN3oie5eNW94GN9yp8yk3OSaUEN3XMkMCLzQgwGRCtJQU75nQrDJRm9jyliQ3G2m8Bo5xTAn1IDWHeXgujj5gtXEeWgAIBAC\"\nEnvironment=\"INSTALL_K3S_EXEC=--cluster-init --node-external-ip 192.168.139.10 --disable servicelb --disable traefik\"\nExecStart=/usr/bin/sh -c \"/opt/k3s-install.sh\"\n[Install]\nWantedBy=multi-user.target \n",
         "enabled": true,
         "name": "k3s-install.service"
       }
